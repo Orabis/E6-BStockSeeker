@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Product(models.Model):
@@ -7,6 +8,7 @@ class Product(models.Model):
     quantity = models.IntegerField(null=False, default=0, blank=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="products")
 
     def __str__(self):
         return self.name
