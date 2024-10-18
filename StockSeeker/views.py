@@ -16,10 +16,12 @@ class CreateUser(generics.CreateAPIView):
 
     def create(self, request):
         if request.user.is_authenticated:
-            return Response({"detail:" "Deconnecte toi ??"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": ["Toujours connecté"]}, status=status.HTTP_403_FORBIDDEN)
+        if not request.data.get("email"):
+            return Response({"email": ["Saisissez une adresse e-mail valide."]}, status=status.HTTP_400_BAD_REQUEST)
         serializers = self.get_serializer(data=request.data)
         serializers.is_valid(raise_exception=True)
-        serializers.save()
+        user = serializers.save()
 
         refresh = RefreshToken.for_user(user)
         access_token = refresh.access_token
@@ -39,22 +41,19 @@ class UserInfo(generics.ListAPIView):
         return User.objects.filter(username=self.request.user)
 
 
-class CreateProduct(generics.CreateAPIView):
+class ProductView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserRateThrottle]
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
-    def create(self, request):
+    def perform_create(self, request):
+        if not request.data.get("quantity"):
+            return Response({"quantity": ["give a quantity"]}, status=status.HTTP_400_BAD_REQUEST)
         serializers = self.get_serializer(data=request.data)
         serializers.is_valid(raise_exception=True)
-        serializers.save(user=request.user)
+        serializers.save(user=self.request.user)
         return Response(serializers.data, status=status.HTTP_201_CREATED)
-
-
-class ListProduct(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ProductSerializer
 
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)

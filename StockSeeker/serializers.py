@@ -24,9 +24,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user"]
 
 
 class AlerteSerializer(serializers.ModelSerializer):
