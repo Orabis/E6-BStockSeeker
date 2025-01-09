@@ -25,15 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
+    is_stock_low = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user"]
-
-
-class AlerteSerializer(serializers.ModelSerializer):
-    product = ProductSerializer
-
-    class Meta:
-        model = Alerte
-        fields = ["id", "product", "stock_limit", "message", "creation_date", "modification_date"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","alert_message","is_stock_low"]

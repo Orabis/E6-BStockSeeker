@@ -9,14 +9,13 @@ class Product(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="products")
+    stock_limit = models.IntegerField(null=True, blank=True)
+    alert_enabled = models.BooleanField(default=False)
+    alert_message = models.CharField(max_length=200, null=True, blank=True,help_text="Message d'alerte")
+
+    @property
+    def is_stock_low(self):
+        return self.alert_enabled and self.stock_limit is not None and self.quantity < self.stock_limit
 
     def __str__(self):
         return self.name
-
-
-class Alerte(models.Model):
-    product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name="alert")
-    stock_limit = models.IntegerField(null=False, blank=False)
-    message = models.CharField(max_length=200, null=True, blank=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    modification_date = models.DateTimeField(auto_now=True)

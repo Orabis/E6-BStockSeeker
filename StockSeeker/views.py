@@ -57,3 +57,4 @@ class ProductView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)
+

@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'StockSeeker',
     'rest_framework',
+    'drf_spectacular',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'StockSeeker.urls'
@@ -104,6 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -131,3 +136,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'StockSeeker API',
+    'DESCRIPTION': 'Doc de l’API pour StockSeeker',
+    'VERSION': '1.0.0',
+}
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Remplace par l'URL de ton front-end
+]
