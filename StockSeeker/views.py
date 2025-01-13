@@ -33,12 +33,12 @@ class CreateUser(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class UserInfo(generics.ListAPIView):
+class UserInfo(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
-    def get_queryset(self):
-        return User.objects.filter(username=self.request.user)
+    def get_object(self):
+        return self.request.user
 
 
 class ProductView(viewsets.ModelViewSet):
