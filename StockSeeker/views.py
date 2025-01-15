@@ -33,7 +33,7 @@ class CreateUser(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class UserInfo(generics.RetrieveAPIView):
+class UserInfo(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 

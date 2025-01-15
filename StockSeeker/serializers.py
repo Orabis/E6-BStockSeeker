@@ -15,6 +15,14 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Cette adresse e-mail est déjà utilisée.")
         return value
 
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            instance.set_password(validated_data.pop('password'))
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
     def create(self, validated_data):
         password = validated_data.pop("password")
         user = User(**validated_data)
