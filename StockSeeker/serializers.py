@@ -33,8 +33,20 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    is_stock_low = serializers.BooleanField(read_only=True)
+    is_stock_low = serializers.SerializerMethodField()
 
+    def validate(self, data):
+        if data.get('alert_enabled') and data.get('stock_limit') is None:
+            raise serializers.ValidationError({
+                'product_stock_limit': "Ce champ est obligatoire si une alerte est activée."
+            })
+        return data
+    
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","alert_message","is_stock_low"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low"]
+
+    def get_is_stock_low(self, obj):
+        if not isinstance(obj, Product):
+            return None
+        return obj.is_stock_low
