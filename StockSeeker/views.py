@@ -48,7 +48,7 @@ class ProductView(viewsets.ModelViewSet):
     queryset = Product.objects.all()
 
     def perform_create(self, request):
-        if not request.data.get("quantity"):
+        if 'quantity' not in request.data or request.data.get('quantity') is None:
             return Response({"quantity": ["give a quantity"]}, status=status.HTTP_400_BAD_REQUEST)
         serializers = self.get_serializer(data=request.data)
         serializers.is_valid(raise_exception=True)
