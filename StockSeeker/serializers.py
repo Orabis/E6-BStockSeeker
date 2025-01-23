@@ -44,8 +44,13 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low"]
-
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image"]
+    
+    def validate_quantity(self, value):
+        if value < 0:
+            raise serializers.ValidationError("La quantité ne peut pas être négative.")
+        return value
+    
     def get_is_stock_low(self, obj):
         if not isinstance(obj, Product):
             return None

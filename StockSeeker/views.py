@@ -47,14 +47,9 @@ class ProductView(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
-    def perform_create(self, request):
-        if 'quantity' not in request.data or request.data.get('quantity') is None:
-            return Response({"quantity": ["give a quantity"]}, status=status.HTTP_400_BAD_REQUEST)
-        serializers = self.get_serializer(data=request.data)
-        serializers.is_valid(raise_exception=True)
-        serializers.save(user=self.request.user)
-        return Response(serializers.data, status=status.HTTP_201_CREATED)
-
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)
 

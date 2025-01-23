@@ -11,7 +11,7 @@ class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="products")
     stock_limit = models.IntegerField(null=True, blank=True)
     alert_enabled = models.BooleanField(default=False)
-    
+    image = models.CharField(null=True, blank=True)
     @property
     def is_stock_low(self):
         return self.alert_enabled and self.stock_limit is not None and self.quantity < self.stock_limit
