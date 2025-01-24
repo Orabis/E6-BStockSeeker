@@ -53,3 +53,15 @@ class ProductView(viewsets.ModelViewSet):
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)
 
+class WarehouseView(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
+    serializer_class = WarehouseSerializer
+    queryset = Warehouse.objects.all()
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
+    def get_queryset(self):
+        return Warehouse.objects.filter(user_id=self.request.user)
+

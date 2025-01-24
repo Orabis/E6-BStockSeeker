@@ -34,7 +34,10 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     is_stock_low = serializers.SerializerMethodField()
-
+    warehouse = serializers.PrimaryKeyRelatedField(
+        queryset=Warehouse.objects.all(),
+        many=True
+    )
     def validate(self, data):
         if data.get('alert_enabled') and data.get('stock_limit') is None:
             raise serializers.ValidationError({
@@ -44,8 +47,13 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouse"]
     
+    def validate_warehouse(self, value):
+        if not value:
+            raise serializers.ValidationError("Un produit doit être associé à au moins un entrepôt.")
+        return value
+
     def validate_quantity(self, value):
         if value < 0:
             raise serializers.ValidationError("La quantité ne peut pas être négative.")
@@ -55,3 +63,15 @@ class ProductSerializer(serializers.ModelSerializer):
         if not isinstance(obj, Product):
             return None
         return obj.is_stock_low
+    
+class WarehouseSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Warehouse
+        fields = ["id", "name", "location", "max_capacity","user"]
+    
+    def validate_max_capacity(self, value):
+        if value < 0:
+            raise serializers.ValidationError("La capacité maximale ne peut pas être négative.")
+        return value

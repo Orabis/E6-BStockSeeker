@@ -4,12 +4,13 @@ from rest_framework import routers
 from .views import *
 from . import views
 from rest_framework_simplejwt.views import *
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView
 
 ##juge pas les noms d'acces OK ?##
 
 router = routers.DefaultRouter()
 router.register(r'products', ProductView, basename='product')
+router.register(r'warehouses', WarehouseView, basename='warehouse')
 
 urlpatterns = [
     path('api/', include(router.urls)),
