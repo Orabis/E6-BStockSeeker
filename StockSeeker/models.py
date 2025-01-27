@@ -22,7 +22,7 @@ class Product(models.Model):
     stock_limit = models.IntegerField(null=True, blank=True)
     alert_enabled = models.BooleanField(default=False)
     image = models.CharField(null=True, blank=True)
-    warehouse = models.ManyToManyField(Warehouse, related_name="products")
+    warehouse_ids = models.ManyToManyField(Warehouse, related_name="products")
     @property
     def is_stock_low(self):
         return self.alert_enabled and self.stock_limit is not None and self.quantity < self.stock_limit

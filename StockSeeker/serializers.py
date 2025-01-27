@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     is_stock_low = serializers.SerializerMethodField()
-    warehouse = serializers.PrimaryKeyRelatedField(
+    warehouse_ids = serializers.PrimaryKeyRelatedField(
         queryset=Warehouse.objects.all(),
         many=True
     )
@@ -47,9 +47,9 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouse"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouse_ids"]
     
-    def validate_warehouse(self, value):
+    def validate_warehouse_ids(self, value):
         if not value:
             raise serializers.ValidationError("Un produit doit être associé à au moins un entrepôt.")
         return value
