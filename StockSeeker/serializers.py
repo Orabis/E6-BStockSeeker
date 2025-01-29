@@ -34,10 +34,11 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     is_stock_low = serializers.SerializerMethodField()
-    warehouse_ids = serializers.PrimaryKeyRelatedField(
+    warehouses = serializers.PrimaryKeyRelatedField(
         queryset=Warehouse.objects.all(),
         many=True
     )
+
     def validate(self, data):
         if data.get('alert_enabled') and data.get('stock_limit') is None:
             raise serializers.ValidationError({
@@ -47,9 +48,42 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouse_ids"]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouses",]
+
+    def create(self, validated_data):
+        warehouses = validated_data.pop('warehouses', [])
+        product = Product.objects.create(**validated_data)
+        product.warehouses.set(warehouses)
+
+        for warehouse in product.warehouses.all():
+            print(f'capacité actuelle {warehouse.actual_capacity}, - {product.quantity}')
+            warehouse.actual_capacity -= product.quantity
+            warehouse.save()
+        return product
     
-    def validate_warehouse_ids(self, value):
+    def update(self,instance, validated_data):
+        product = Product.objects.get(id=instance.id)
+        instance.name = validated_data.get("name", instance.name)
+        instance.description = validated_data.get("description", instance.description)
+        instance.quantity = validated_data.get("quantity", instance.quantity)
+        instance.save()
+
+        for warehouse in product.warehouses.all():
+            warehouse.actual_capacity = warehouse.max_capacity
+            warehouse.actual_capacity -= instance.quantity
+            warehouse.save()
+        return instance
+    
+    def destroy(self, instance):
+        product = Product.objects.get(id=instance.id)
+        
+        for warehouse in product.warehouses.all():
+            warehouse.actual_capacity += instance.quantity
+            warehouse.save()
+        instance.delete()
+        return instance
+    
+    def validate_warehouses(self, value):
         if not value:
             raise serializers.ValidationError("Un produit doit être associé à au moins un entrepôt.")
         return value
@@ -60,16 +94,14 @@ class ProductSerializer(serializers.ModelSerializer):
         return value
     
     def get_is_stock_low(self, obj):
-        if not isinstance(obj, Product):
-            return None
-        return obj.is_stock_low
+        return obj.alert_enabled and obj.stock_limit is not None and obj.quantity < obj.stock_limit
     
 class WarehouseSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Warehouse
-        fields = ["id", "name", "location", "max_capacity","user"]
+        fields = ["id", "name", "location", "max_capacity","user","actual_capacity"]
     
     def validate_max_capacity(self, value):
         if value < 0:

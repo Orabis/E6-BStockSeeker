@@ -7,7 +7,7 @@ class Warehouse(models.Model):
     location = models.CharField(null=False, max_length=30, blank=False)
     max_capacity = models.IntegerField(null=False, default=0, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="warehouses", null=False, blank=False)
-
+    actual_capacity = models.IntegerField(default=0, null=False, blank=False)
 
     def __str__(self):
         return self.name
@@ -22,10 +22,7 @@ class Product(models.Model):
     stock_limit = models.IntegerField(null=True, blank=True)
     alert_enabled = models.BooleanField(default=False)
     image = models.CharField(null=True, blank=True)
-    warehouse_ids = models.ManyToManyField(Warehouse, related_name="products")
-    @property
-    def is_stock_low(self):
-        return self.alert_enabled and self.stock_limit is not None and self.quantity < self.stock_limit
+    warehouses = models.ManyToManyField(Warehouse, related_name="products")
 
     def __str__(self):
         return self.name

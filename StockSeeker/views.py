@@ -49,7 +49,10 @@ class ProductView(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)
 
@@ -62,6 +65,8 @@ class WarehouseView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
         
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+    
     def get_queryset(self):
         return Warehouse.objects.filter(user_id=self.request.user)
-
