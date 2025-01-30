@@ -53,6 +53,10 @@ class ProductView(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
 
+    def perform_destroy(self, instance):
+        serializer = self.get_serializer(instance)
+        serializer.destroy(instance)
+        
     def get_queryset(self):
         return Product.objects.filter(user_id=self.request.user)
 
