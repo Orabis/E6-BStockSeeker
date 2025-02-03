@@ -56,7 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             product = Product.objects.create(**validated_data)
             product.warehouses.set(warehouses)
-
+            product.refresh_from_db()
             for warehouse in product.warehouses.all():
                 warehouse.refresh_from_db()
                 if warehouse.actual_capacity - product.quantity < 0:
@@ -71,13 +71,15 @@ class ProductSerializer(serializers.ModelSerializer):
     def update(self,instance, validated_data):
         new_quantity = validated_data.get("quantity", instance.quantity)
         quantity_difference = new_quantity - instance.quantity
+        warehouses = validated_data.pop('warehouses', [])
 
         with transaction.atomic():
             instance.name = validated_data.get("name", instance.name)
             instance.description = validated_data.get("description", instance.description)
             instance.quantity = new_quantity
+            instance.warehouses.set(warehouses)
             instance.save()
-
+            instance.refresh_from_db()
             for warehouse in instance.warehouses.all():
                 warehouse.refresh_from_db()
                 if warehouse.actual_capacity - quantity_difference < 0:
