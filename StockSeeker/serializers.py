@@ -68,27 +68,38 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return product
     
-    def update(self,instance, validated_data):
+    def update(self, instance, validated_data):
         new_quantity = validated_data.get("quantity", instance.quantity)
-        quantity_difference = new_quantity - instance.quantity
-        warehouses = validated_data.pop('warehouses', [])
+        new_warehouses = validated_data.pop('warehouses', [])
 
+        old_warehouses = list(instance.warehouses.all())
+        old_quantity = instance.quantity 
+        
         with transaction.atomic():
+            for warehouse in old_warehouses:
+                warehouse.refresh_from_db()
+                warehouse.actual_capacity = F('actual_capacity') + old_quantity
+                warehouse.save(update_fields=['actual_capacity'])
+
             instance.name = validated_data.get("name", instance.name)
             instance.description = validated_data.get("description", instance.description)
             instance.quantity = new_quantity
-            instance.warehouses.set(warehouses)
             instance.save()
+
+            instance.warehouses.set(new_warehouses)
             instance.refresh_from_db()
+
             for warehouse in instance.warehouses.all():
                 warehouse.refresh_from_db()
-                if warehouse.actual_capacity - quantity_difference < 0:
+                if warehouse.actual_capacity - new_quantity < 0:
                     raise serializers.ValidationError({
                         'quantity': ["L'entrepôt n'a plus assez de place"]
                     })
-                warehouse.actual_capacity = F('actual_capacity') - quantity_difference
+                warehouse.actual_capacity = F('actual_capacity') - new_quantity
                 warehouse.save(update_fields=['actual_capacity'])
+
             return instance
+
     
     def destroy(self, instance):
         with transaction.atomic():
