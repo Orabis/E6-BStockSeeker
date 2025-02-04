@@ -48,7 +48,7 @@ class ProductSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Product
-        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouses",]
+        fields = ["id", "name", "description", "quantity", "creation_date", "modification_date", "user","stock_limit","alert_enabled","is_stock_low","image","warehouses","reference"]
 
     def create(self, validated_data):
         warehouses = validated_data.pop('warehouses', [])
@@ -83,6 +83,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
             instance.name = validated_data.get("name", instance.name)
             instance.description = validated_data.get("description", instance.description)
+            instance.reference = validated_data.get("reference", instance.reference)
             instance.quantity = new_quantity
             instance.save()
 

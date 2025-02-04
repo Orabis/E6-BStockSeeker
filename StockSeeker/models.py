@@ -14,6 +14,7 @@ class Warehouse(models.Model):
     
 class Product(models.Model):
     name = models.CharField(null=False, max_length=30, blank=False)
+    reference = models.CharField(null=False, blank=False ,max_length=60, unique=True)
     description = models.CharField(default=None, null=True, blank=True, max_length=120)
     quantity = models.IntegerField(null=False, default=0, blank=False)
     creation_date = models.DateTimeField(auto_now_add=True)
