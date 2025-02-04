@@ -25,7 +25,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.1.41']
 
 # Application definition
 
@@ -143,10 +143,11 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
 }
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Remplace par l'URL de ton front-end
+    "http://localhost:5173","http://192.168.1.41:5173","http://192.168.1.41"
 ]
 CORS_ALLOW_CREDENTIALS = True
-
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = "None"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
