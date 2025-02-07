@@ -5,21 +5,19 @@ interface intuitive et des fonctionnalités pratiques, gérez facilement vos pro
 
 ## Fonctionnalités Principales
 
-### A FAIRE
-
-- **Notification quand stock low**  
-  afficher un toast quand un produit est low en stock sur la page d'accueil **Need**
-
-- **CSS**  
-  css a faire, et besoin de rendre beau le site **Need**
-
-- **Exportation des Données en CSV**  
-  Exportez vos données de stock en format CSV pour une analyse facile ou un partage avec d'autres outils. **Need**
-
 ### FAIT
 
+- **CSS**  
+  css a faire, et besoin de rendre beau le site **Done**
+
+- **Exportation des Données en CSV**  
+  Exportez vos données de stock en format CSV pour une analyse facile ou un partage avec d'autres outils. **Done**
+
+- **Notification quand stock low**  
+  afficher un toast quand un produit est low en stock sur la page d'accueil **Done**
+
 - **Ajout Rapide de produit**  
-  Ajouter rapidement un produit sur le tableau de bord grace a sa reference **DONE**
+  Ajouter rapidement un produit sur le tableau de bord grace a sa reference **Done**
 
 - **Suppression de Produits**  
   Supprimez facilement les produits dont vous n'avez plus besoin pour garder votre inventaire à jour. **Done**

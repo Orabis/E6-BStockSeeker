@@ -85,6 +85,8 @@ class ProductSerializer(serializers.ModelSerializer):
             instance.description = validated_data.get("description", instance.description)
             instance.reference = validated_data.get("reference", instance.reference)
             instance.image = validated_data.get("image", instance.image)
+            instance.alert_enabled = validated_data.get("alert_enabled", instance.alert_enabled)
+            instance.stock_limit = validated_data.get("stock_limit", instance.stock_limit)
             instance.quantity = new_quantity
             instance.save()
 
