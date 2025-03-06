@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = os.environ.get('DEBUG', '0') == '1'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.1.41']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(',')
+if '' in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.remove('')
+
 
 # Application definition
 
@@ -36,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'StockSeeker',
     'rest_framework',
     'drf_spectacular',
@@ -81,11 +86,11 @@ WSGI_APPLICATION = 'StockSeeker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD',''),
+        'HOST': os.environ.get('DB_HOST','db'),
+        'PORT': os.environ.get('DB_PORT','5432'),
     }
 }
 
@@ -142,14 +147,17 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Doc de l’API pour StockSeeker',
     'VERSION': '1.0.0',
 }
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173","http://192.168.1.41:5173","http://192.168.1.41"
-]
+
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
+if '' in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.remove('')
+
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "Lax"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,}
+    'BLACKLIST_AFTER_ROTATION': True,
+    }
