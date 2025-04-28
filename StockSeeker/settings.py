@@ -26,9 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', '0') == '1'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(',')
-if '' in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.remove('')
+ALLOWED_HOSTS = ['192.168.1.174','localhost','0.0.0.0','api.orabis.fr','orabis.fr','www.orabis.fr','stock.orabis.fr']
 
 
 # Application definition
@@ -50,12 +48,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 
 ]
 
@@ -148,10 +146,27 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
 }
 
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
-if '' in CORS_ALLOWED_ORIGINS:
-    CORS_ALLOWED_ORIGINS.remove('')
-
+CORS_ALLOWED_ORIGINS = [
+	'https://orabis.fr',
+	'https://www.orabis.fr',
+	'https://api.orabis.fr',
+	'http://0.0.0.0',
+	'http://192.168.1.174:5000',
+	'http://localhost:5000',
+	'https://localhost:5000',
+	'https://192.168.1.174:5000',
+	'https://stock.orabis.fr',
+]
+CSRF_TRUSTED_ORIGINS = [
+	'https://orabis.fr',
+	'https://www.orabis.fr',
+	'https://api.orabis.fr',
+	'http://192.168.1.174:5000',
+	'http://localhost:5000',
+	'https://localhost:5000',
+	'https://stock.orabis.fr',
+]
+CORS_ORIGIN_WHITELIST = ('https://stock.orabis.fr','http://localhost:5000','https://localhost:5000','192.168.1.174:5000','https://orabis.fr','orabis.fr','https://www.orabis.fr','www.orabis.fr')
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
